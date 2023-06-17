@@ -1,58 +1,89 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class GameBoardGenerator : MonoBehaviour
 {
     [SerializeField] private Tile[] tilesPrefabs;
-    [SerializeField] private int layersAmount;
-    [SerializeField] private int tilesOnLayerAmountMax;
+    [SerializeField] private SpriteRenderer gameBoard;
 
-    private Tile[][] _createdTiles;
+    [SerializeField] private int layersAmount;
+    [SerializeField] private int bottomLayerHeight;
+    [SerializeField] private int bottomLayerWidth;
+
+    private List<Tile[,]> _createdTiles;
+
+    private float _leftBoardBound;
+    private float _bottomBoardBound;
 
     private void Awake()
     {
-        SetupCreatedTileArray();
-    }
-
-    private void Start()
-    {
+        InitializeGameBoardBounds();
+        InitializeCreatedTileArray();
         GenerateGameBoard();
     }
 
     private void GenerateGameBoard()
     {
-        for (int i = 0; i < layersAmount; i++)
+        for (int i = 0; i < _createdTiles.Count; i++)
         {
-            for (int j = 0; j < _createdTiles[i].Length; j++)
+            int rows = _createdTiles[i].GetUpperBound(0) + 1;
+            int columns = _createdTiles[i].Length / rows;
+            float offset = i * 0.5f;
+            for (int j = 0; j < rows; j++)
             {
-                if (i == 0)
+                for (int k = 0; k < columns; k++)
                 {
-                    Vector3 randomPosition = new Vector3(Random.Range(i, j), Random.Range(i, j), 0.0f);
-                    CreateTile(i, j, randomPosition);
-                }
-                else
-                {
-                    CreateTile(i, j, _createdTiles[i - 1][Random.Range(0, j)].GetRandomCorner());
+                    float leftPoint = _leftBoardBound + j + 0.5f + offset;
+                    float bottomPoint = _bottomBoardBound + k + 0.5f + offset;
+                    Vector3 newTilePosition = new Vector3(leftPoint, bottomPoint, i * -0.1f);
+
+                    CreateTile(newTilePosition, i, j, k);
                 }
             }
         }
     }
 
-    private void CreateTile(int layer, int tilesAmount, Vector3 spawnPosition)
+    private void CreateTile(Vector3 spawnPosition, int layer, int x, int y)
     {
         Tile randomTile = tilesPrefabs[Random.Range(0, tilesPrefabs.Length)];
-        Tile newTile = Instantiate(randomTile, spawnPosition, Quaternion.identity);
-        var tilePosition = newTile.transform.position;
-        newTile.SetupCorners(tilePosition);
-        _createdTiles[layer][tilesAmount] = newTile;
+        var newTile = Instantiate(randomTile, spawnPosition, Quaternion.identity);
+        _createdTiles[layer][x, y] = newTile;
+        if (layer != 0)
+        {
+            CloseTiles(newTile, layer, x, y);
+        }
     }
 
-    private void SetupCreatedTileArray()
+    private void CloseTiles(Tile tile, int layer, int x, int y)
     {
-        _createdTiles = new Tile[layersAmount][];
+        List<Tile> newClosedTiles = new List<Tile>
+        {
+            _createdTiles[layer - 1][x, y],
+            _createdTiles[layer - 1][x + 1, y],
+            _createdTiles[layer - 1][x, y + 1],
+            _createdTiles[layer - 1][x + 1, y + 1]
+        };
+        foreach (var closedTile in newClosedTiles.Where(closedTile => closedTile != null))
+        {
+            closedTile.AddClosingTile(tile);
+        }
+    }
+
+    private void InitializeCreatedTileArray()
+    {
+        _createdTiles = new List<Tile[,]>();
         for (int i = 0; i < layersAmount; i++)
         {
-            _createdTiles[i] = new Tile[tilesOnLayerAmountMax - (i + 2)];
+            _createdTiles.Add(new Tile[bottomLayerWidth - i, bottomLayerHeight - i]);
         }
+    }
+
+    private void InitializeGameBoardBounds()
+    {
+        var bounds = gameBoard.bounds;
+        _leftBoardBound = bounds.min.x;
+        _bottomBoardBound = bounds.min.y;
     }
 }
