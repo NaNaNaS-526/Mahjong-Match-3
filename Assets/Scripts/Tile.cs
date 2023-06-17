@@ -5,21 +5,20 @@ using UnityEngine.EventSystems;
 
 public class Tile : MonoBehaviour, IPointerDownHandler
 {
-    public event Action OnTileMoved;
+    public TileType type;
+
+    public event Action<Tile> OnTileClicked;
 
     [SerializeField] private Color closedTileColor = new(0.0f, 0.0f, 0.0f, 0.5f);
     private bool _isOpened = true;
+    private bool _isClicked;
 
     private bool IsOpened
     {
         get => _isOpened;
         set
         {
-            if (value == false)
-            {
-                _renderer.color = closedTileColor;
-            }
-
+            if (value == false) _renderer.color = closedTileColor;
             _isOpened = value;
         }
     }
@@ -39,7 +38,7 @@ public class Tile : MonoBehaviour, IPointerDownHandler
     public void AddClosingTile(Tile tile)
     {
         closingTiles.Add(tile);
-        tile.OnTileMoved += () => RemoveClosingTile(tile);
+        tile.OnTileClicked += RemoveClosingTile;
         IsOpened = false;
     }
 
@@ -61,14 +60,12 @@ public class Tile : MonoBehaviour, IPointerDownHandler
         IsOpened = true;
     }
 
-    private void MoveTile()
-    {
-        transform.position = Vector3.zero;
-        OnTileMoved?.Invoke();
-    }
-
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (IsOpened) MoveTile();
+        if (IsOpened && !_isClicked)
+        {
+            OnTileClicked?.Invoke(this);
+            _isClicked = true;
+        }
     }
 }

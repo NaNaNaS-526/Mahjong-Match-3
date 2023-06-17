@@ -17,6 +17,8 @@ public class GameBoardGenerator : MonoBehaviour
     private float _leftBoardBound;
     private float _bottomBoardBound;
 
+    private const float BaseOffset = 0.5f;
+
     private void Awake()
     {
         InitializeGameBoardBounds();
@@ -30,14 +32,15 @@ public class GameBoardGenerator : MonoBehaviour
         {
             int rows = _createdTiles[i].GetUpperBound(0) + 1;
             int columns = _createdTiles[i].Length / rows;
-            float offset = i * 0.5f;
+            float offset = i * BaseOffset;
+
             for (int j = 0; j < rows; j++)
             {
                 for (int k = 0; k < columns; k++)
                 {
-                    float leftPoint = _leftBoardBound + j + 0.5f + offset;
-                    float bottomPoint = _bottomBoardBound + k + 0.5f + offset;
-                    Vector3 newTilePosition = new Vector3(leftPoint, bottomPoint, i * -0.1f);
+                    float leftPoint = _leftBoardBound + j + BaseOffset + offset;
+                    float bottomPoint = _bottomBoardBound + k + BaseOffset + offset;
+                    Vector3 newTilePosition = new Vector3(leftPoint, bottomPoint, i * -0.01f);
 
                     CreateTile(newTilePosition, i, j, k);
                 }
@@ -82,8 +85,19 @@ public class GameBoardGenerator : MonoBehaviour
 
     private void InitializeGameBoardBounds()
     {
+        gameBoard.transform.localScale = new Vector2(bottomLayerWidth, bottomLayerHeight);
         var bounds = gameBoard.bounds;
         _leftBoardBound = bounds.min.x;
         _bottomBoardBound = bounds.min.y;
+    }
+
+    public List<Tile[,]> GetCreatedTiles()
+    {
+        return _createdTiles;
+    }
+
+    public (int width, int height) GetGameBoardSizes()
+    {
+        return (bottomLayerWidth, bottomLayerHeight);
     }
 }

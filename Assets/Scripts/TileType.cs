@@ -1,0 +1,20 @@
+﻿public enum TileType
+{
+    None,
+    Apple,
+    Apricot,
+    Blueberry,
+    Cherry,
+    Gooseberry,
+    Greenfruit,
+    Lemon,
+    Orange,
+    Peach,
+    Pear,
+    Pineapple,
+    Plum,
+    Pomegranate,
+    Strangefruit,
+    Strawberry,
+    Yellow
+}
