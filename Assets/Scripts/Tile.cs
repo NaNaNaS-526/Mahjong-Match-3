@@ -1,34 +1,74 @@
-﻿using UniRx;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class Tile : MonoBehaviour
+public class Tile : MonoBehaviour, IPointerDownHandler
 {
-    public ReactiveProperty<bool> isOpened;
+    public event Action OnTileMoved;
 
-    public Vector3 leftTopCorner;
-    public Vector3 rightTopCorner;
-    public Vector3 leftBottomCorner;
-    public Vector3 rightBottomCorner;
+    [SerializeField] private Color closedTileColor = new(0.0f, 0.0f, 0.0f, 0.5f);
+    private bool _isOpened = true;
 
-    public void SetupCorners(Vector3 tilePosition)
+    private bool IsOpened
     {
-        leftTopCorner = new Vector3(tilePosition.x - 0.5f, tilePosition.y + 0.5f, 0);
-        rightTopCorner = new Vector3(tilePosition.x + 0.5f, tilePosition.y + 0.5f, 0);
-        leftBottomCorner = new Vector3(tilePosition.x - 0.5f, tilePosition.y - 0.5f, 0);
-        rightBottomCorner = new Vector3(tilePosition.x + 0.5f, tilePosition.y - 0.5f, 0);
+        get => _isOpened;
+        set
+        {
+            if (value == false)
+            {
+                _renderer.color = closedTileColor;
+            }
+
+            _isOpened = value;
+        }
     }
 
-    public Vector3 GetRandomCorner()
-    {
-        int randomNumber = Random.Range(0, 4);
-        switch (randomNumber)
-        {
-            case 0: return leftTopCorner;
-            case 1: return rightTopCorner;
-            case 2: return leftBottomCorner;
-            case 3: return rightBottomCorner;
-        }
 
-        return leftBottomCorner;
+    public List<Tile> closingTiles;
+
+    private SpriteRenderer _renderer;
+    private Color _baseColor;
+
+    private void Awake()
+    {
+        _renderer = GetComponent<SpriteRenderer>();
+        _baseColor = _renderer.color;
+    }
+
+    public void AddClosingTile(Tile tile)
+    {
+        closingTiles.Add(tile);
+        tile.OnTileMoved += () => RemoveClosingTile(tile);
+        IsOpened = false;
+    }
+
+    private void RemoveClosingTile(Tile tile)
+    {
+        closingTiles.Remove(tile);
+        CheckClosingTiles();
+    }
+
+    private void CheckClosingTiles()
+    {
+        if (closingTiles.Count != 0) return;
+        OpenTile();
+    }
+
+    private void OpenTile()
+    {
+        _renderer.color = _baseColor;
+        IsOpened = true;
+    }
+
+    private void MoveTile()
+    {
+        transform.position = Vector3.zero;
+        OnTileMoved?.Invoke();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (IsOpened) MoveTile();
     }
 }
