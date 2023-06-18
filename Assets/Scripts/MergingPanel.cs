@@ -3,8 +3,9 @@ using System.Linq;
 using DG.Tweening;
 using UnityEngine;
 using Zenject;
+using Vector3 = UnityEngine.Vector3;
 
-public class MergePanel : MonoBehaviour
+public class MergingPanel : MonoBehaviour
 {
     [SerializeField] private GameObject levelFailPanel;
     [SerializeField] private GameObject levelCompletePanel;
@@ -18,11 +19,13 @@ public class MergePanel : MonoBehaviour
     private const float Offset = 0.6f;
 
     private int _maxTilesAmount;
+    private Vector3 _destinationPoint;
 
     [Inject]
     private void Construct(GameBoardGenerator gameBoardGenerator)
     {
         _gameBoardGenerator = gameBoardGenerator;
+        _gameBoardGenerator.OnTilesOver += CompleteLevel;
     }
 
     private void Awake()
@@ -32,8 +35,7 @@ public class MergePanel : MonoBehaviour
 
     private void Start()
     {
-        levelFailPanel.SetActive(false);
-        levelCompletePanel.SetActive(false);
+        HideGameEndPanels();
         InitializeLeftBound();
         SignUpForTileUpdates();
         InitializeTileList();
@@ -63,6 +65,7 @@ public class MergePanel : MonoBehaviour
             return;
         }
 
+        tilesOnPanel.Add(tile);
         MoveTileToDestinationPoint(tile, destinationPoint);
     }
 
@@ -77,16 +80,18 @@ public class MergePanel : MonoBehaviour
             tilesOnPanel.RemoveAt(i);
         }
 
-        var destinationPoint = new Vector3(globalOffset + tilesOnPanel.Count, y, 0.01f);
+        _destinationPoint = new Vector3(globalOffset + tilesOnPanel.Count, y, 0.01f);
         if (tile)
         {
-            MoveTileToDestinationPoint(tile, destinationPoint);
+            tilesOnPanel.Add(tile);
+            MoveTileToDestinationPoint(tile, _destinationPoint);
         }
 
-        foreach (var a in rightTiles)
+        foreach (var rightTile in rightTiles)
         {
-            destinationPoint = new Vector3(globalOffset + tilesOnPanel.Count, y, 0.01f);
-            MoveTileToDestinationPoint(a, destinationPoint);
+            _destinationPoint = new Vector3(globalOffset + tilesOnPanel.Count, y, 0.01f);
+            tilesOnPanel.Add(rightTile);
+            MoveTileToDestinationPoint(rightTile, _destinationPoint);
         }
     }
 
@@ -94,17 +99,13 @@ public class MergePanel : MonoBehaviour
     {
         var position = tile.transform.position;
         tile.transform.DOMove(new Vector3(position.x, position.y, -1.0f), 0.01f);
-        tile.transform.DOMove(destinationPoint, 1.0f).SetEase(Ease.InOutElastic).OnComplete(() =>
-        {
-            tilesOnPanel.Add(tile);
-            CheckTileListFullness();
-        });
+        tile.transform.DOMove(destinationPoint, 1.0f).SetEase(Ease.InOutElastic).OnComplete(CheckTileListFullness);
     }
 
     private void CheckTileListFullness()
     {
         CheckTilesForMatches();
-        if (tilesOnPanel.Count >= _maxTilesAmount) EndGame();
+        if (tilesOnPanel.Count >= _maxTilesAmount) FailLevel();
     }
 
     private void CheckTilesForMatches()
@@ -138,15 +139,30 @@ public class MergePanel : MonoBehaviour
         foreach (var tile in matchingTiles)
         {
             tilesOnPanel.Remove(tile);
-            Destroy(tile.gameObject, 0.1f);
+            DestroyMatchingTiles(tile);
         }
 
-        RearrangeTiles(index, null);
+        RearrangeTiles(index - 1, null);
     }
 
-    private void EndGame()
+    private void DestroyMatchingTiles(Tile tile)
+    {
+        var tilePosition = tile.transform.position;
+        tile.transform.DOJump(tilePosition + Vector3.up * 15, 15.0f, 1, 0.5f).SetEase(Ease.InOutBounce);
+        tile.transform.DOMoveY(tilePosition.y - 3.0f, 1.0f).OnComplete(() => { Destroy(tile.gameObject); });
+        tile.transform.DORotate(Vector3.forward * 360.0f, 3.0f, RotateMode.LocalAxisAdd).SetLoops(-1);
+            
+        _gameBoardGenerator.ChangeTilesOnBoardAmount(-1);
+    }
+
+    private void FailLevel()
     {
         levelFailPanel.SetActive(true);
+    }
+
+    private void CompleteLevel()
+    {
+        levelCompletePanel.SetActive(true);
     }
 
     private void InitializeLeftBound()
@@ -161,5 +177,11 @@ public class MergePanel : MonoBehaviour
         tilesOnPanel = new List<Tile>(capacity);
         _maxTilesAmount = capacity;
         transform.localScale = new Vector3(capacity, 1.2f);
+    }
+
+    private void HideGameEndPanels()
+    {
+        levelFailPanel.SetActive(false);
+        levelCompletePanel.SetActive(false);
     }
 }

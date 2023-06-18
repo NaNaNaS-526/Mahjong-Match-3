@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &721590605578746934
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -7944382226697611878, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.x
+      value: 1.16
+      objectReference: {fileID: 0}
+    - target: {fileID: -7944382226697611878, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_SpriteTilingProperty.oldSize.y
+      value: 1.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901728, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_Name
+      value: PineappleTile
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901729, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 1698785488, guid: e7b2a47336c19894a951a85a3e299a70, type: 3}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901730, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901731, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: type
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6278165050770901731, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
+      propertyPath: isOpened
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: cc9f083d700983f42a1288730e00a1b4, type: 3}
