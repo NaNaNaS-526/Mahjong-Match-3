@@ -2,11 +2,12 @@
 
 public static class CorrectTileArrayCreator
 {
-    private static List<Tile> newTileList = new List<Tile>();
+    private static List<Tile> newTileList = new();
     private static int exceeding;
 
     public static Tile[] CreateCorrectTileArray(Tile[] tilesPrefabs, int tilesOnBoardAmount)
     {
+        newTileList.Clear();
         for (int i = 0; i < tilesOnBoardAmount / 3; i++)
         {
             AddTilesToNewTileList(newTileList, tilesPrefabs, i);

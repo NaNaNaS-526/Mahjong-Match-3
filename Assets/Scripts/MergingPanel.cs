@@ -148,10 +148,9 @@ public class MergingPanel : MonoBehaviour
     private void DestroyMatchingTiles(Tile tile)
     {
         var tilePosition = tile.transform.position;
-        tile.transform.DOJump(tilePosition + Vector3.up * 15, 15.0f, 1, 0.5f).SetEase(Ease.InOutBounce);
         tile.transform.DOMoveY(tilePosition.y - 3.0f, 1.0f).OnComplete(() => { Destroy(tile.gameObject); });
         tile.transform.DORotate(Vector3.forward * 360.0f, 3.0f, RotateMode.LocalAxisAdd).SetLoops(-1);
-            
+
         _gameBoardGenerator.ChangeTilesOnBoardAmount(-1);
     }
 
