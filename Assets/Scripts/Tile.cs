@@ -13,6 +13,8 @@ public class Tile : MonoBehaviour, IPointerDownHandler
     private bool _isOpened = true;
     private bool _isClicked;
 
+    private static float lastClickTime;
+
     private bool IsOpened
     {
         get => _isOpened;
@@ -62,10 +64,11 @@ public class Tile : MonoBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (IsOpened && !_isClicked)
+        if (IsOpened && !_isClicked && Time.time - lastClickTime > 1f)
         {
             OnTileClicked?.Invoke(this);
             _isClicked = true;
+            lastClickTime = Time.time;
         }
     }
 }

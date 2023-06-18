@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -5,6 +6,8 @@ using Random = UnityEngine.Random;
 
 public class GameBoardGenerator : MonoBehaviour
 {
+    public event Action OnTilesOver;
+
     [SerializeField] private Tile[] tilesPrefabs;
     [SerializeField] private SpriteRenderer gameBoard;
 
@@ -18,6 +21,9 @@ public class GameBoardGenerator : MonoBehaviour
     private float _bottomBoardBound;
 
     private const float BaseOffset = 0.5f;
+
+    private int _tilesOnBoardAmount;
+    private int _currentTileNumber;
 
     private void Awake()
     {
@@ -50,13 +56,15 @@ public class GameBoardGenerator : MonoBehaviour
 
     private void CreateTile(Vector3 spawnPosition, int layer, int x, int y)
     {
-        Tile randomTile = tilesPrefabs[Random.Range(0, tilesPrefabs.Length)];
+        Tile randomTile = tilesPrefabs[_currentTileNumber];
         var newTile = Instantiate(randomTile, spawnPosition, Quaternion.identity);
         _createdTiles[layer][x, y] = newTile;
         if (layer != 0)
         {
             CloseTiles(newTile, layer, x, y);
         }
+
+        _currentTileNumber++;
     }
 
     private void CloseTiles(Tile tile, int layer, int x, int y)
@@ -79,8 +87,12 @@ public class GameBoardGenerator : MonoBehaviour
         _createdTiles = new List<Tile[,]>();
         for (int i = 0; i < layersAmount; i++)
         {
-            _createdTiles.Add(new Tile[bottomLayerWidth - i, bottomLayerHeight - i]);
+            var layer = new Tile[bottomLayerWidth - i, bottomLayerHeight - i];
+            _createdTiles.Add(layer);
+            _tilesOnBoardAmount += layer.Length;
         }
+
+        tilesPrefabs = CorrectTileArrayCreator.CreateCorrectTileArray(tilesPrefabs, _tilesOnBoardAmount);
     }
 
     private void InitializeGameBoardBounds()
@@ -99,5 +111,14 @@ public class GameBoardGenerator : MonoBehaviour
     public (int width, int height) GetGameBoardSizes()
     {
         return (bottomLayerWidth, bottomLayerHeight);
+    }
+
+    public void ChangeTilesOnBoardAmount(int addedValue)
+    {
+        _tilesOnBoardAmount += addedValue;
+        if (_tilesOnBoardAmount <= 0)
+        {
+            OnTilesOver?.Invoke();
+        }
     }
 }
